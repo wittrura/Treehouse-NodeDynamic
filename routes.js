@@ -1,20 +1,36 @@
 let Profile = require("./profile.js");
 let renderer = require("./renderer.js");
+let commonHeader = {'Content-Type': 'text/html'};
+
+const QUERYSTRING = require('querystring');
 
 //  Handle HTTP route GET / and POST / aka index
 function home(req, res){
 
   // if url == '/' && GET
   if(req.url === '/'){
-    // show search
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    renderer.view("header", {}, res);
-    renderer.view("search", {}, res);
-    renderer.view("footer", {}, res);
-    res.end();
+    if(req.method.toLowerCase() === "get"){
+      // show search
+      res.writeHead(200, commonHeader);
+      renderer.view("header", {}, res);
+      renderer.view("search", {}, res);
+      renderer.view("footer", {}, res);
+      res.end();
+    } else {
+      // if url == '/'&& POST
+      // get the post data from body
+      req.on("data", function(postBody){
+        // extract the username
+        let postData = QUERYSTRING.parse(postBody.toString())
+        // redirectTo /:username
+        res.writeHead(302, {
+          location: '/' + postData.username});
+        res.end();
+      });
+
+    }
   }
-  // if url == '/'&& POST
-    // redirectTo /:username
+
 }
 
 // Handle HTTP route GET /:username
@@ -22,7 +38,7 @@ function user(req, res){
   // if url == '/*'
   let username = req.url.replace('/', '');
   if (username.length > 0){
-    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.writeHead(200, commonHeader);
     renderer.view("header", {}, res)
 
     // get JSON from Treehouse
