@@ -10,20 +10,18 @@ function home(req, res){
   // if url == '/' && GET
   if(req.url === '/'){
     if(req.method.toLowerCase() === "get"){
-      // show search
       res.writeHead(200, commonHeader);
       renderer.view("header", {}, res);
       renderer.view("search", {}, res);
       renderer.view("footer", {}, res);
       res.end();
     } else {
-      // if url == '/'&& POST
       // get the post data from body
       req.on("data", function(postBody){
         // extract the username
         let postData = QUERYSTRING.parse(postBody.toString())
         // redirectTo /:username
-        res.writeHead(302, {
+        res.writeHead(303, {
           location: '/' + postData.username});
         res.end();
       });
